@@ -1,11 +1,27 @@
-version : '1'
+version : '3'
 services:
   mysql:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
+    container_name: mysql-countries-app
     environment:
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - app-network
     ports:
       - "3306:3306"
     volumes:
       - "./initialize.sql:/docker-entrypoint-initdb.d/1.sql"
+  maven-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: maven-countries-app
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    ports:
+      - "8080:8080"
+networks:
+  app-network:
